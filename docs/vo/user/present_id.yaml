@@ -1,0 +1,3 @@
+name: PresentId
+package: user
+type: uuid.UUID

@@ -1,0 +1,33 @@
+name: UserItem
+package: user
+structure:
+  UserId:
+    name: user_id
+    type: user.UserId
+    nullable: false
+    number: 1
+  ItemId:
+    name: item_id
+    type: master.ItemId
+    nullable: false
+    number: 2
+  Quantity:
+    name: quantity
+    type: uint64
+    nullable: false
+    number: 3
+  CreatedAt:
+    name: created_at
+    type: time.Time
+    nullable: false
+    number: 4
+  UpdatedAt:
+    name: updated_at
+    type: time.Time
+    nullable: false
+    number: 5
+primary: UserId,ItemId
+index:
+  - UserId
+foreign:
+  - UserId,user.ID

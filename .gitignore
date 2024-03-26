@@ -1,0 +1,7 @@
+.idea
+.vscode
+
+docker/master_mysql/data/*
+docker/user_mysql/data/*
+docker/user_redis/data/dump.rdb
+

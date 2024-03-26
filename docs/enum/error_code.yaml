@@ -1,0 +1,5 @@
+name: ErrorCode
+package: error
+structure:
+  - ErrorCodeNone
+  - ErrorCodeUserNotFound

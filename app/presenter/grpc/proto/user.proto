@@ -1,0 +1,11 @@
+syntax = "proto3";
+service Cat {
+  rpc CreateUser (CreateUserMessage) returns (CreateUserResponse) {}
+}
+message CreateUserMessage {
+  string user_name;
+}
+message CreateUserResponse {
+  string message;
+  int Code;
+}

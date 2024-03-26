@@ -1,0 +1,6 @@
+name: ItemEffectType
+package: item
+structure:
+  - ItemEffectTypeNone
+  - ItemEffectTypeRecoverStamina
+  - ItemEffectTypeAddUserExp

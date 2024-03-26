@@ -1,0 +1,6 @@
+id	type	name	description	resource_id	sell_coin	effect_type	effect_value	schedule_id	max_count	max_view_count
+1	1	test_item_1			100	1	10	0	999999999	99999
+2	1	test_item_2			100	1	10	1	999999999	99999
+3	1	test_item_3			100	1	10	2	999999999	99999
+4	1	test_item_4			100	1	10	1	999999999	99999
+5	2	test_item_5			100	0	0	0	999999999	99999

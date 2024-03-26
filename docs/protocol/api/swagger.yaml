@@ -1,0 +1,403 @@
+definitions:
+  error.ErrorCode:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - ErrorCodeNone
+    - ErrorCodeUserNotFound
+  master.ItemId:
+    properties:
+      item_id: {}
+    type: object
+  request.ItemGainRequest:
+    properties:
+      count:
+        minimum: 1
+        type: integer
+      item_id:
+        minimum: 1
+        type: integer
+    required:
+    - count
+    - item_id
+    type: object
+  request.ItemGetAllRequest:
+    properties:
+      exclusion_zero_quantity:
+        default: false
+        type: boolean
+    type: object
+  request.ItemGetRequest:
+    properties:
+      item_id:
+        $ref: '#/definitions/master.ItemId'
+      user_id:
+        $ref: '#/definitions/user.UserId'
+    required:
+    - item_id
+    - user_id
+    type: object
+  request.ItemSellRequest:
+    properties:
+      count:
+        minimum: 1
+        type: integer
+      item_id:
+        $ref: '#/definitions/master.ItemId'
+      user_id:
+        $ref: '#/definitions/user.UserId'
+    required:
+    - count
+    - item_id
+    - user_id
+    type: object
+  request.ItemUseRequest:
+    properties:
+      count:
+        minimum: 1
+        type: integer
+      item_id:
+        $ref: '#/definitions/master.ItemId'
+      user_id:
+        $ref: '#/definitions/user.UserId'
+    required:
+    - count
+    - item_id
+    - user_id
+    type: object
+  request.UserCreateRequest:
+    properties:
+      user_name:
+        type: string
+    required:
+    - user_name
+    type: object
+  request.UserGetRequest:
+    type: object
+  request.UserLoginRequest:
+    properties:
+      user_id:
+        $ref: '#/definitions/user.UserId'
+    required:
+    - user_id
+    type: object
+  response.CommonResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        minLength: 1
+        type: string
+    required:
+    - code
+    - message
+    type: object
+  response.ErrorResponse:
+    properties:
+      common:
+        $ref: '#/definitions/response.CommonResponse'
+    type: object
+  response.ItemGainResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      item:
+        $ref: '#/definitions/user.UserItem'
+      message:
+        minLength: 1
+        type: string
+    required:
+    - code
+    - item
+    - message
+    type: object
+  response.ItemGetAllResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      items:
+        items:
+          $ref: '#/definitions/user.UserItem'
+        type: array
+      message:
+        minLength: 1
+        type: string
+    required:
+    - code
+    - items
+    - message
+    type: object
+  response.ItemGetResponse:
+    properties:
+      common:
+        $ref: '#/definitions/response.CommonResponse'
+      item:
+        $ref: '#/definitions/user.UserItem'
+    required:
+    - item
+    type: object
+  response.ItemSellResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      item:
+        $ref: '#/definitions/user.UserItem'
+      message:
+        minLength: 1
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - code
+    - item
+    - message
+    - user
+    type: object
+  response.ItemUseResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      item:
+        $ref: '#/definitions/user.UserItem'
+      message:
+        minLength: 1
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - code
+    - item
+    - message
+    - user
+    type: object
+  response.UserCreateResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      message:
+        minLength: 1
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - code
+    - message
+    - user
+    type: object
+  response.UserGetResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      message:
+        minLength: 1
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - code
+    - message
+    - user
+    type: object
+  response.UserLoginResponse:
+    properties:
+      code:
+        $ref: '#/definitions/error.ErrorCode'
+      message:
+        minLength: 1
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+    required:
+    - code
+    - message
+    - user
+    type: object
+  user.User:
+    properties:
+      coin:
+        type: integer
+      id:
+        $ref: '#/definitions/user.UserId'
+      latest_logged_in_at:
+        type: string
+      name:
+        type: string
+      stamina:
+        type: integer
+      stamina_latest_updated_at:
+        type: string
+    type: object
+  user.UserId:
+    properties:
+      value.ValueObject[uuid.UUID]: {}
+    type: object
+  user.UserItem:
+    properties:
+      item_id:
+        $ref: '#/definitions/master.ItemId'
+      quantity:
+        type: integer
+      user_id:
+        $ref: '#/definitions/user.UserId'
+    type: object
+info:
+  contact: {}
+  description: Golangサンプルプロジェクト
+  license:
+    name: komatsubara.s
+  title: test-app
+  version: "1.0"
+paths:
+  /item/gain:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: アイテム売却リクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.ItemSellRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ItemSellResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: アイテムを売却
+      tags:
+      - Item
+  /item/get:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: アイテム取得リクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.ItemGetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ItemGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: 対象のユーザー所持アイテム情報を取得
+      tags:
+      - Item
+  /item/get_all:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: アイテム取得リクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.ItemGetAllRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ItemGetAllResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: ユーザー所持アイテム情報を取得
+      tags:
+      - Item
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ユーザー作成リクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserCreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: ユーザーを作成
+      tags:
+      - User
+  /user/get:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ユーザー取得リクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserGetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserGetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: ユーザーを取得
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ユーザーログインリクエスト
+        in: body
+        name: title
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: ユーザーログイン
+      tags:
+      - User
+swagger: "2.0"

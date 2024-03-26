@@ -1,0 +1,52 @@
+name: User
+package: user
+structure:
+  ID:
+    name: id
+    type: user.UserId
+    nullable: false
+    number: 1
+  Name:
+    name: name
+    type: string
+    nullable: false
+    number: 2
+  Stamina:
+    name: stamina
+    type: uint64
+    nullable: false
+    number: 3
+  StaminaLatestUpdatedAt:
+    name: stamina_latest_updated_at
+    type: time.Time
+    nullable: false
+    number: 4
+  Coin:
+    name: coin
+    type: uint64
+    nullable: false
+    number: 5
+  LatestLoggedInAt:
+    name: latest_logged_in_at
+    type: time.Time
+    nullable: false
+    number: 6
+  CreatedAt:
+    name: created_at
+    type: time.Time
+    nullable: false
+    number: 7
+  UpdatedAt:
+    name: updated_at
+    type: time.Time
+    nullable: false
+    number: 8
+primary: ID
+# INSERT UPDATE/INSERT IGNORE定義したい
+# duplicate:
+#   type: override
+#   columns:
+#     - stamina
+#     - stamina_latest_updated_at
+#     - coin
+#     - latest_logged_in_at

@@ -1,0 +1,6 @@
+name: ItemType
+package: item
+structure:
+  - ItemTypeNone
+  - ItemTypeConsume
+  - ItemTypeMaterial

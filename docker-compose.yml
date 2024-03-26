@@ -1,0 +1,176 @@
+version: "3"
+
+services:
+#  app:
+#    depends_on:
+#      user_mysql_1:
+#        codition: service_healthy
+#      user_mysql_2:
+#        codition: service_healthy
+#      master_mysql:
+#        codition: service_healthy
+#      user_redis:
+#        codition: service_healthy
+
+  user_mysql_1:
+    container_name: user_mysql_1
+    build:
+      context: .
+      dockerfile: ./docker/user_mysql/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USER_DB_PASS}
+      MYSQL_DATABASE_LIST: ${USER_DB_NAME}
+      TZ: ${TZ}
+    hostname: user_mysql_1
+    ports:
+      - 33306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  user_mysql_2:
+    container_name: user_mysql_2
+    build:
+      context: .
+      dockerfile: ./docker/user_mysql/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USER_DB_PASS}
+      MYSQL_DATABASE_LIST: ${USER_DB_NAME}
+      TZ: ${TZ}
+    hostname: user_mysql_2
+    ports:
+      - 43306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  master_mysql:
+    container_name: master_mysql
+    build:
+      context: .
+      dockerfile: ./docker/master_mysql/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MASTER_DB_PASS}
+      MYSQL_DATABASE_LIST: ${MASTER_DB_NAME}
+      TZ: ${TZ}
+    hostname: master_mysql
+    ports:
+      - 53306:3306
+    volumes:
+      - ./docker/master_mysql/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  user_redis:
+    container_name: user_redis
+    build:
+      context: .
+      dockerfile: docker/user_redis/Dockerfile
+    hostname: user_redis
+    ports:
+      - "26379:6379"
+    volumes:
+      - ./docker/user_redis/data:/data
+      - ./docker/user_redis/user_redis.conf:/etc/user_redis.conf
+    healthcheck:
+      test: ["CMD", "user_redis-cli","ping"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 60s
+
+  master_redis:
+    container_name: master_redis
+    build:
+      context: .
+      dockerfile: docker/user_redis/Dockerfile
+    hostname: master_redis
+    ports:
+      - "36379:6379"
+    volumes:
+      - ./docker/master_redis/data:/data
+      - ./docker/master_redis/user_redis.conf:/etc/user_redis.conf
+    healthcheck:
+      test: ["CMD", "user_redis-cli","ping"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 60s
+
+  db_migrate_job:
+    container_name: db_migrate_job
+    build:
+      context: .
+      dockerfile: ./docker/db_migrate_job/Dockerfile
+    volumes:
+      - ./db:/db
+    depends_on:
+      user_mysql_1:
+        condition: service_healthy
+      user_mysql_2:
+        condition: service_healthy
+      master_mysql:
+        condition: service_healthy
+
+#  spanner:
+#    image: gcr.io/cloud-spanner-emulator/emulator
+#    ports:
+#        - "9010:9010"
+#        - "9020:9020"
+#
+#  gcloud-spanner-init:
+#    image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+#    command: >
+#      bash -c 'gcloud config configurations create emulator &&
+#              gcloud config set auth/disable_credentials true &&
+#              gcloud config set project $${PROJECT_ID} &&
+#              gcloud config set api_endpoint_overrides/spanner $${SPANNER_EMULATOR_URL} &&
+#              gcloud config set auth/disable_credentials true &&
+#              gcloud spanner instances create $${INSTANCE_NAME} --config=emulator-config --description=Emulator --nodes=1'
+#    environment:
+#      PROJECT_ID: "test-project"
+#      SPANNER_EMULATOR_URL: "http://spanner:9020/"
+#      INSTANCE_NAME: "test-instance"
+#      DATABASE_NAME: "test-database"
+#
+#  wrench-crearte:
+#    image: mercari/wrench
+#    command: "create --directory /ddl"
+#    environment:
+#      SPANNER_PROJECT_ID: "test-project"
+#      SPANNER_INSTANCE_ID: "test-instance"
+#      SPANNER_DATABASE_ID: "test-database"
+#      SPANNER_EMULATOR_HOST: "spanner:9010"
+#      SPANNER_EMULATOR_URL: "http://spanner:9020/"
+#    volumes:
+#      - ./migrations/ddl:/ddl
+#    restart: on-failure
+#
+#  wrench-apply:
+#    image: mercari/wrench
+#    command: "apply --dml /dml/dml.sql"
+#    environment:
+#      SPANNER_PROJECT_ID: "test-project"
+#      SPANNER_INSTANCE_ID: "test-instance"
+#      SPANNER_DATABASE_ID: "test-database"
+#      SPANNER_EMULATOR_HOST: "spanner:9010"
+#      SPANNER_EMULATOR_URL: "http://spanner:9020/"
+#    volumes:
+#      - ./migrations/dml:/dml
+#    restart: on-failure
+#
+#  spanner-cli:
+#    image: sjdaws/spanner-cli:latest
+#    environment:
+#      SPANNER_EMULATOR_HOST: "spanner:9010"
+#    command: ['sh', '-c', 'echo this container keep running && tail -f /dev/null']
