@@ -74,7 +74,6 @@ func JwtAuthenticationMiddleware() gin.HandlerFunc {
 		}
 
 		gctx.UserId = &userId
-		udctx.SetUserId(userId)
 
 		ctx.Next()
 	}
